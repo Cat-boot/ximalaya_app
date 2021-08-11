@@ -12,7 +12,7 @@ export interface ICarouselData {
   color: [string, string];
 }
 //声明猜你喜欢数据类型
-interface IGuess {
+export interface IGuess {
   id: number;
   img: string;
   title: string;
@@ -65,7 +65,6 @@ const homeModel: homeModel = {
     },
     *effectsGuess(__, {call, put}) {
       const {data} = yield call(axios.get, GuessUrl);
-      console.log(data);
       yield put({
         type: 'setState',
         payload: {
