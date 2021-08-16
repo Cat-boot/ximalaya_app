@@ -5,6 +5,8 @@ import axios from 'axios';
 const CarouselUrl = 'carousel';
 //设置guess路径
 const GuessUrl = 'Guess';
+//设置channel列表路径
+const ChannelUrl = 'channel';
 //声明轮播图类型
 export interface ICarouselData {
   id: string;
@@ -17,10 +19,20 @@ export interface IGuess {
   img: string;
   title: string;
 }
+//声明列表数据类型
+export interface IChannel {
+  id: string;
+  img: string;
+  title: string;
+  remark: string;
+  played: number;
+  playing: number;
+}
 // 声明并导出默认值的属性
 export interface homeState {
   ACarouselData: ICarouselData[];
   AGuessData: IGuess[];
+  AChannelData: IChannel[];
 }
 //声明model属性
 interface homeModel extends Model {
@@ -32,12 +44,14 @@ interface homeModel extends Model {
   effects: {
     effectsCarousel: Effect;
     effectsGuess: Effect;
+    effectsChannel: Effect;
   };
 }
 //声明默认值
-const initailState = {
+const initailState: homeState = {
   ACarouselData: [],
   AGuessData: [],
+  AChannelData: [],
 };
 
 const homeModel: homeModel = {
@@ -71,6 +85,10 @@ const homeModel: homeModel = {
           AGuessData: data ? data : '',
         },
       });
+    },
+    *effectsChannel(__, {call, put}) {
+      const {data} = yield call(axios.get, ChannelUrl);
+      yield put({type: 'setState', payload: {AChannelData: data ? data : ''}});
     },
   },
 };
