@@ -2,32 +2,43 @@ import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {IChannel} from '@/models/home';
 import IconFont from '@/assets/icon';
+import Touchable from '@/components/Touchable';
 interface IProps {
   data: IChannel;
+  _onPress: (data: string) => void;
 }
-class Channel extends React.Component<IProps> {
+//PureComponent判断父组件传递过来的props和上一次传递过来的是否一样，一样的话就不渲染render，否则渲染
+class Channel extends React.PureComponent<IProps> {
+  _onPress = () => {
+    const {_onPress, data} = this.props;
+    if (typeof _onPress === 'function') {
+      _onPress(data.id);
+    }
+  };
   render() {
     const {data} = this.props;
     return (
-      <View style={styles.container}>
-        <Image source={{uri: data.img}} style={styles.channelImg} />
-        <View style={styles.rightContainer}>
-          <Text numberOfLines={1}>{data.title}</Text>
-          <Text style={styles.channelRemarkBg} numberOfLines={2}>
-            {data.remark}
-          </Text>
-          <View style={styles.channelPlay}>
-            <View style={[styles.channelPlay, styles.mr10, styles.center]}>
-              <IconFont name={'icon-xmlyshenqingshitingke'} size={16} />
-              <Text>{data.played}</Text>
-            </View>
-            <View style={[styles.channelPlay, styles.center]}>
-              <IconFont name={'icon-xmlybofang1'} size={16} />
-              <Text>{data.playing}</Text>
+      <Touchable onPress={this._onPress}>
+        <View style={styles.container}>
+          <Image source={{uri: data.img}} style={styles.channelImg} />
+          <View style={styles.rightContainer}>
+            <Text numberOfLines={1}>{data.title}</Text>
+            <Text style={styles.channelRemarkBg} numberOfLines={2}>
+              {data.remark}
+            </Text>
+            <View style={styles.channelPlay}>
+              <View style={[styles.channelPlay, styles.mr10, styles.center]}>
+                <IconFont name={'icon-xmlyshenqingshitingke'} size={16} />
+                <Text>{data.played}</Text>
+              </View>
+              <View style={[styles.channelPlay, styles.center]}>
+                <IconFont name={'icon-xmlybofang1'} size={16} />
+                <Text>{data.playing}</Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
+      </Touchable>
     );
   }
 }

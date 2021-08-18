@@ -1,36 +1,43 @@
 import React from 'react';
 import {Text, View, StyleSheet, FlatList, Image} from 'react-native';
 import {connect, ConnectedProps} from 'react-redux';
-import {RootState} from '@/models/index';
 import {IGuess} from '@/models/home';
 import Touchable from '@/components/Touchable';
 import IconFont from '@/assets/icon';
-
-const MapStateToProps = ({home}: RootState) => {
-  return {
-    AGuessData: home.AGuessData,
-  };
-};
+import {RootState} from '@/models/index';
+const MapStateToProps = (state: RootState) => ({
+  AGuessData: state.home.AGuessData,
+  // loading: state.loading.effects['home/effectsGuess'],
+});
 const connector = connect(MapStateToProps);
-type ModelStat = ConnectedProps<typeof connector>;
-
-class Guess extends React.Component<ModelStat> {
+type ModelState = ConnectedProps<typeof connector>;
+interface IProps extends ModelState {
+  _onPress: (data: number) => void;
+}
+class Guess extends React.PureComponent<IProps> {
   componentDidMount() {
-    this.getGuessData();
+    this.getAGuessData();
   }
-  getGuessData = () => {
+  //获取猜你喜欢数据
+  getAGuessData = () => {
     const {dispatch} = this.props;
     dispatch({
       type: 'home/effectsGuess',
     });
   };
+  //点击跳转
+  _onPress = (data: number) => {
+    const {_onPress} = this.props;
+    if (typeof _onPress === 'function') {
+      _onPress(data);
+    }
+  };
+
   _renderItem = ({item}: {item: IGuess}) => {
     return (
       <Touchable
         activeOpacity={1}
-        onPress={() => {
-          console.log(item.id);
-        }}
+        onPress={() => this._onPress(item.id)}
         style={styles.items}>
         <Image source={{uri: item.img}} style={styles.images} />
         <Text numberOfLines={2}>
@@ -53,7 +60,9 @@ class Guess extends React.Component<ModelStat> {
           <Text>猜你喜欢</Text>
         </View>
         <View style={styles.guessTitleItem}>
-          <Text style={styles.guessTitleItemText}>更多</Text>
+          <Touchable onPress={() => this._onPress(111)}>
+            <Text style={styles.guessTitleItemText}>更多</Text>
+          </Touchable>
           <IconFont name={'icon-xmlygengduo'} size={18} />
         </View>
       </View>
@@ -61,7 +70,7 @@ class Guess extends React.Component<ModelStat> {
   };
   _bottomFootComponent = () => {
     return (
-      <Touchable style={styles.guessMoreItem} onPress={this.getGuessData}>
+      <Touchable style={styles.guessMoreItem} onPress={this.getAGuessData}>
         <IconFont
           style={styles.iconRight}
           name={'icon-xmlygengxin1'}
@@ -71,17 +80,22 @@ class Guess extends React.Component<ModelStat> {
       </Touchable>
     );
   };
+  componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    };
+  }
   render() {
     const {AGuessData} = this.props;
     return (
       <View style={styles.container}>
         <FlatList
+          ListHeaderComponent={this._topHearderComponent}
           data={AGuessData}
           renderItem={this._renderItem}
           numColumns={3}
           style={styles.guessList}
           ListFooterComponent={this._bottomFootComponent}
-          ListHeaderComponent={this._topHearderComponent}
         />
       </View>
     );

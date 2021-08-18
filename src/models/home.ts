@@ -86,9 +86,12 @@ const homeModel: homeModel = {
         },
       });
     },
-    *effectsChannel(__, {call, put}) {
+    *effectsChannel({callback}, {call, put}) {
       const {data} = yield call(axios.get, ChannelUrl);
       yield put({type: 'setState', payload: {AChannelData: data ? data : ''}});
+      if (typeof callback === 'function' && callback) {
+        callback();
+      }
     },
   },
 };
