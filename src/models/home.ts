@@ -1,6 +1,7 @@
 import {Effect, Model} from 'dva-core-ts';
 import {Reducer} from 'redux';
 import axios from 'axios';
+import {RootState} from '@/models/index';
 //设置carousel轮播图路径
 const CarouselUrl = 'carousel';
 //设置guess路径
@@ -28,11 +29,20 @@ export interface IChannel {
   played: number;
   playing: number;
 }
+//声明列表分页数据
+export interface IPagination {
+  current: number;
+  total: number;
+  hasMore: boolean;
+}
 // 声明并导出默认值的属性
 export interface homeState {
   ACarouselData: ICarouselData[];
   AGuessData: IGuess[];
   AChannelData: IChannel[];
+  APaginationData: IPagination;
+  ActiveCarouselIndex: number;
+  BGradientVisible: boolean;
 }
 //声明model属性
 interface homeModel extends Model {
@@ -52,6 +62,13 @@ const initailState: homeState = {
   ACarouselData: [],
   AGuessData: [],
   AChannelData: [],
+  APaginationData: {
+    current: 1,
+    total: 0,
+    hasMore: true,
+  },
+  ActiveCarouselIndex: 0,
+  BGradientVisible: true,
 };
 
 const homeModel: homeModel = {
@@ -86,9 +103,37 @@ const homeModel: homeModel = {
         },
       });
     },
-    *effectsChannel({callback}, {call, put}) {
-      const {data} = yield call(axios.get, ChannelUrl);
-      yield put({type: 'setState', payload: {AChannelData: data ? data : ''}});
+    *effectsChannel({callback, payload}, {call, put, select}) {
+      //select是从state拿到之前的数据
+      const {AChannelData, APaginationData} = yield select(
+        (state: RootState) => state.home,
+      );
+      let page = 1;
+      if (payload && payload.loadMore) {
+        page = APaginationData.current + 1;
+      }
+      const {data} = yield call(axios.get, ChannelUrl, {
+        params: {
+          page,
+        },
+      });
+
+      let newAChannelData = data.results ? data.results : '';
+      if (payload && payload.loadMore) {
+        //concat合并之前的数据
+        newAChannelData = AChannelData.concat(newAChannelData);
+      }
+      yield put({
+        type: 'setState',
+        payload: {
+          AChannelData: newAChannelData,
+          APaginationData: {
+            current: data.pagination.current,
+            total: data.pagination.total,
+            hasMore: newAChannelData.length < data.pagination.total,
+          },
+        },
+      });
       if (typeof callback === 'function' && callback) {
         callback();
       }

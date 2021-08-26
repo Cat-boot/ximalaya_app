@@ -12,6 +12,7 @@ import {RootState} from '@/models/index';
 import Touchable from '@/components/Touchable';
 const MapStateToProps = (state: RootState) => ({
   ACarouselData: state.home.ACarouselData,
+  ActiveCarouselIndex: state.home.ActiveCarouselIndex,
   loading: state.loading.effects['home/effectsCarousel'],
 });
 const connector = connect(MapStateToProps);
@@ -19,18 +20,13 @@ type ModelState = ConnectedProps<typeof connector>;
 
 const sliderWidth = viewportWidth;
 const slideWidth = wp(90);
-const slidHeight = hp(26);
+export const slidHeight = hp(26);
 const itemWidth = slideWidth + wp(2) * 2;
 interface IProps extends ModelState {
   _onPress: (data: string) => void;
 }
-interface IState {
-  activeSlide: number;
-}
-class Carousel extends React.Component<IProps, IState> {
-  state = {
-    activeSlide: 0,
-  };
+
+class Carousel extends React.PureComponent<IProps> {
   componentDidMount() {
     this.getACarouselData();
   }
@@ -49,7 +45,11 @@ class Carousel extends React.Component<IProps, IState> {
   };
   //获取当前图片下标
   _onSnapToItem = (index: number) => {
-    this.setState({activeSlide: index});
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'home/setState',
+      payload: {ActiveCarouselIndex: index},
+    });
   };
   //遍历图片
   renderItem = (
@@ -58,6 +58,7 @@ class Carousel extends React.Component<IProps, IState> {
   ) => {
     return (
       <Touchable
+        activeOpacity={1}
         onPress={() => {
           this._onPress(item.id);
         }}>
@@ -76,7 +77,7 @@ class Carousel extends React.Component<IProps, IState> {
   //get 代表这个函数是一个参数，属性，没法给其传值
   //设置轮播状态栏
   get pagination() {
-    const {ACarouselData} = this.props;
+    const {ACarouselData, ActiveCarouselIndex} = this.props;
     return (
       <View style={styles.paginationViewStyle}>
         <Pagination
@@ -85,12 +86,17 @@ class Carousel extends React.Component<IProps, IState> {
           inactiveDotOpacity={0.5}
           inactiveDotScale={0.7}
           dotsLength={ACarouselData.length}
-          activeDotIndex={this.state.activeSlide}
+          activeDotIndex={ActiveCarouselIndex}
         />
       </View>
     );
   }
 
+  componentWillUnmount() {
+    this.setState((state, callback) => {
+      return;
+    });
+  }
   render() {
     const {ACarouselData} = this.props;
     return (
