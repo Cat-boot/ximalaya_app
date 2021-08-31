@@ -5,10 +5,13 @@ import {IGuess} from '@/models/home';
 import Touchable from '@/components/Touchable';
 import IconFont from '@/assets/icon';
 import {RootState} from '@/models/index';
-const MapStateToProps = (state: RootState) => ({
-  AGuessData: state.home.AGuessData,
+
+const MapStateToProps = (state: RootState) => {
+  return {
+    AGuessData: state.home.AGuessData,
+  };
   // loading: state.loading.effects['home/effectsGuess'],
-});
+};
 const connector = connect(MapStateToProps);
 type ModelState = ConnectedProps<typeof connector>;
 interface IProps extends ModelState {

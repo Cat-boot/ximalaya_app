@@ -9,6 +9,7 @@ import LinearAnimatedGradientTransition from 'react-native-linear-animated-gradi
 import Touchable from '@/components/Touchable';
 import {connect, ConnectedProps} from 'react-redux';
 import {RootState} from '@/models/index';
+import {getActiveRouteName} from '@/utils/index';
 const MapStateToProps = (state: RootState) => {
   return {
     BGradientVisible: state.home.BGradientVisible,

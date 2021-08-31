@@ -9,16 +9,12 @@ import {
 
 import {Platform, StatusBar, StyleSheet} from 'react-native';
 import BottomTabs from './bottomTabs';
-import Detail from '@/pages/detail';
 import Category from '@/pages/category';
 export type RootStackParamList = {
   BottomTabs: {
     screen?: string;
   };
   Category: undefined;
-  Detail: {
-    id: number;
-  };
 };
 //因为有传参，要定义入参的类型，StackNavigationProp的泛性值就是我们传过来的参数类型，也就是RootStackParamList的类型
 export type RootStackNavigation = StackNavigationProp<RootStackParamList>;
@@ -74,13 +70,6 @@ class Navigation extends React.Component {
             }}
             name="Category" //相当于导航的链接
             component={Category} //导航对应的组件
-          />
-          <Screen
-            options={{
-              headerTitle: '详情',
-            }}
-            name="Detail"
-            component={Detail}
           />
         </Navigator>
       </NavigationContainer>

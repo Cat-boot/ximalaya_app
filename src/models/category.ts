@@ -30,7 +30,7 @@ interface CategoryModel extends Model {
 const initialState: CategoryModelState = {
   isEdit: false,
   myCategory: [
-    {id: 'home', name: 'home'},
+    {id: '推荐', name: '推荐'},
     {id: 'vip', name: 'vip'},
   ],
   category: [],
@@ -74,12 +74,20 @@ const categoryModel: CategoryModel = {
         type: 'setState',
         payload: {
           isEdit: !category.isEdit,
+          myCategory: payload.myCategory,
         },
       });
+      //如果是编辑状态，才把myCategory的数据保存在本地
+      if (category.isEdit) {
+        storage.save({
+          key: 'myCategory',
+          data: payload.myCategory,
+        });
+      }
     },
   },
   subscriptions: {
-    //setup函数是谁便定义的，只要是在ssubscriptions对象中的函数，都会在dva加载完后执行
+    //setup函数是谁便定义的，只要是在subscriptions对象中的函数，都会在dva加载完后执行
     setup({dispatch}) {
       dispatch({type: 'effectsLoadData'});
     },

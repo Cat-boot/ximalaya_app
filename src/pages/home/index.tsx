@@ -15,13 +15,17 @@ import Carousel, {slidHeight} from '@/pages/home/Carousel';
 import Guess from '@/pages/home/Guess';
 import Channel from '@/pages/home/Channel';
 import {IChannel} from '@/models/home';
+// import {homeTopTabsParamLists} from '@/navigator/homeTopTabs';
+// import {RouteProp} from '@react-navigation/native';
 
-const mapStateToProps = (state: RootState) => ({
-  AChannelData: state.home.AChannelData,
-  BGradientVisible: state.home.BGradientVisible,
-  hasMore: state.home.APaginationData.hasMore,
-  loading: state.loading.effects['home/effectsChannel'],
-});
+const mapStateToProps = (state: RootState) => {
+  return {
+    AChannelData: state.home.AChannelData,
+    BGradientVisible: state.home.BGradientVisible,
+    hasMore: state.home.APaginationData.hasMore,
+    loading: state.loading.effects['home/effectsChannel'],
+  };
+};
 const connector = connect(mapStateToProps);
 
 export type ModelState = ConnectedProps<typeof connector>;
