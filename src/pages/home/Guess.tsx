@@ -6,16 +6,19 @@ import Touchable from '@/components/Touchable';
 import IconFont from '@/assets/icon';
 import {RootState} from '@/models/index';
 
-const MapStateToProps = (state: RootState) => {
+const MapStateToProps = (state: RootState, props: {namespace: string}) => {
+  const namespace = props.namespace,
+    modelState = state[namespace];
   return {
-    AGuessData: state.home.AGuessData,
+    AGuessData: modelState.AGuessData,
+    loading: state.loading.effects[namespace + '/effectsGuess'],
   };
-  // loading: state.loading.effects['home/effectsGuess'],
 };
 const connector = connect(MapStateToProps);
 type ModelState = ConnectedProps<typeof connector>;
 interface IProps extends ModelState {
   _onPress: (data: number) => void;
+  namespace: string;
 }
 class Guess extends React.PureComponent<IProps> {
   componentDidMount() {
@@ -23,9 +26,12 @@ class Guess extends React.PureComponent<IProps> {
   }
   //获取猜你喜欢数据
   getAGuessData = () => {
-    const {dispatch} = this.props;
+    const {dispatch, namespace} = this.props;
     dispatch({
-      type: 'home/effectsGuess',
+      type: namespace + '/effectsGuess',
+      payload: {
+        namespace,
+      },
     });
   };
   //点击跳转

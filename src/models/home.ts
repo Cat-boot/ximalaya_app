@@ -106,8 +106,11 @@ const homeModel: homeModel = {
     *effectsChannel({callback, payload}, {call, put, select}) {
       //select是从state拿到之前的数据
       const {AChannelData, APaginationData} = yield select(
-        (state: RootState) => state.home,
+        (state: RootState) => {
+          return state[payload.namespace];
+        },
       );
+
       let page = 1;
       if (payload && payload.loadMore) {
         page = APaginationData.current + 1;
@@ -117,12 +120,12 @@ const homeModel: homeModel = {
           page,
         },
       });
-
-      let newAChannelData = data.results ? data.results : '';
+      let newAChannelData = data.results ? data.results : [];
       if (payload && payload.loadMore) {
         //concat合并之前的数据
         newAChannelData = AChannelData.concat(newAChannelData);
       }
+
       yield put({
         type: 'setState',
         payload: {

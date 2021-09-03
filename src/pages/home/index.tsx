@@ -15,15 +15,21 @@ import Carousel, {slidHeight} from '@/pages/home/Carousel';
 import Guess from '@/pages/home/Guess';
 import Channel from '@/pages/home/Channel';
 import {IChannel} from '@/models/home';
-// import {homeTopTabsParamLists} from '@/navigator/homeTopTabs';
-// import {RouteProp} from '@react-navigation/native';
+import {HomeParamList} from '@/navigator/homeTopTabs';
+import {RouteProp} from '@react-navigation/native';
 
-const mapStateToProps = (state: RootState) => {
+const mapStateToProps = (
+  state: RootState,
+  props: {route: RouteProp<HomeParamList, string>},
+) => {
+  const {namespace} = props.route.params; //拿到当前页面的名字
+  const modelState = state[namespace];
   return {
-    AChannelData: state.home.AChannelData,
-    BGradientVisible: state.home.BGradientVisible,
-    hasMore: state.home.APaginationData.hasMore,
-    loading: state.loading.effects['home/effectsChannel'],
+    namespace,
+    AChannelData: modelState.AChannelData,
+    BGradientVisible: modelState.BGradientVisible,
+    hasMore: modelState.APaginationData.hasMore,
+    loading: state.loading.effects[namespace + '/effectsChannel'],
   };
 };
 const connector = connect(mapStateToProps);
@@ -51,8 +57,13 @@ class Index extends React.PureComponent<IProp, IState> {
 
   //获取列表数据
   getAChannelData = () => {
-    const {dispatch} = this.props;
-    dispatch({type: 'home/effectsChannel'});
+    const {dispatch, namespace} = this.props;
+    dispatch({
+      type: namespace + '/effectsChannel',
+      payload: {
+        namespace,
+      },
+    });
   };
   //相当于给Channel组件绑定id，如果id不一样才渲染不一样的列表，相同的不渲染，减少内存消耗
   _keyExtractor = (item: IChannel) => {
@@ -63,9 +74,12 @@ class Index extends React.PureComponent<IProp, IState> {
     //1.改变refreshing状态为true
     this.setState({refreshing: true});
     //2.改变数据
-    const {dispatch} = this.props;
+    const {dispatch, namespace} = this.props;
     dispatch({
-      type: 'home/effectsChannel',
+      type: namespace + '/effectsChannel',
+      payload: {
+        namespace,
+      },
       callback: () => {
         //1.改变refreshing状态为false
         this.setState({refreshing: false});
@@ -74,12 +88,13 @@ class Index extends React.PureComponent<IProp, IState> {
   };
   //上拉加载更多
   _onEndReached = () => {
-    const {dispatch, loading, hasMore} = this.props;
+    const {dispatch, loading, hasMore, namespace} = this.props;
     if (loading || !hasMore) return;
     dispatch({
-      type: 'home/effectsChannel',
+      type: namespace + '/effectsChannel',
       payload: {
         loadMore: true,
+        namespace,
       },
     });
   };
@@ -89,10 +104,11 @@ class Index extends React.PureComponent<IProp, IState> {
   };
   //将轮播图和猜你喜欢作为头部放进FlatList，
   get _ListHeaderComponent() {
+    const {namespace} = this.props;
     return (
       <View>
-        <Carousel _onPress={this._onPress} />
-        <Guess _onPress={this._onPress} />
+        <Carousel _onPress={this._onPress} namespace={namespace} />
+        <Guess _onPress={this._onPress} namespace={namespace} />
       </View>
     );
   }
@@ -106,7 +122,12 @@ class Index extends React.PureComponent<IProp, IState> {
         </View>
       );
     }
-    if (loading && hasMore && AChannelData.length > 0) {
+    if (
+      loading !== undefined &&
+      loading &&
+      hasMore &&
+      AChannelData.length > 0
+    ) {
       return (
         <View style={styles.end}>
           <Text>--加载中...--</Text>
@@ -129,18 +150,24 @@ class Index extends React.PureComponent<IProp, IState> {
   //监听falstlist滚动事件
   // {nativeEvent}: NativeSyntheticEvent<NativeScrollEvent> 获取原生滚动监听事件
   _onScroll = ({nativeEvent}: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const {dispatch, BGradientVisible} = this.props;
+    const {dispatch, BGradientVisible, namespace} = this.props;
     const offsetY = nativeEvent.contentOffset.y; //获取滚动y的值
     let newBGradientVisible = offsetY < slidHeight;
     if (BGradientVisible !== newBGradientVisible) {
       dispatch({
-        type: 'home/setState',
+        type: namespace + '/setState',
         payload: {
           BGradientVisible: newBGradientVisible,
+          namespace,
         },
       });
     }
   };
+  componentWillUnmount() {
+    this.setState((state, callback) => {
+      return;
+    });
+  }
   render() {
     const {AChannelData} = this.props;
     const {refreshing} = this.state;

@@ -15,6 +15,11 @@ class Channel extends React.PureComponent<IProps> {
       _onPress(data.id);
     }
   };
+  componentWillUnmount() {
+    this.setState((state, callback) => {
+      return;
+    });
+  }
   render() {
     const {data} = this.props;
     return (

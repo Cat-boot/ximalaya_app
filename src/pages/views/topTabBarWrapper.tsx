@@ -10,14 +10,17 @@ import Touchable from '@/components/Touchable';
 import {connect, ConnectedProps} from 'react-redux';
 import {RootState} from '@/models/index';
 import {getActiveRouteName} from '@/utils/index';
-const MapStateToProps = (state: RootState) => {
+const MapStateToProps = (state: RootState, props: MaterialTopTabBarProps) => {
+  const routeName = getActiveRouteName(props.state),
+    modelState = state[routeName];
+
   return {
-    BGradientVisible: state.home.BGradientVisible,
+    BGradientVisible: modelState.BGradientVisible,
     linearColors:
-      state.home.ACarouselData !== undefined &&
-      state.home.ACarouselData.length > 0
-        ? state.home.ACarouselData[state.home.ActiveCarouselIndex]
-          ? state.home.ACarouselData[state.home.ActiveCarouselIndex].color
+      modelState.ACarouselData !== undefined &&
+      modelState.ACarouselData.length > 0
+        ? modelState.ACarouselData[modelState.ActiveCarouselIndex]
+          ? modelState.ACarouselData[modelState.ActiveCarouselIndex].color
           : undefined
         : ['#ccc', '#e2e2e2'],
   };
@@ -25,7 +28,7 @@ const MapStateToProps = (state: RootState) => {
 const connector = connect(MapStateToProps);
 type ModelState = ConnectedProps<typeof connector>;
 type IProps = MaterialTopTabBarProps & ModelState;
-class topTabBarWrapper extends React.Component<IProps> {
+class topTabBarWrapper extends React.PureComponent<IProps> {
   //分类点击跳转页面
   _onPress = () => {
     const {navigation} = this.props;

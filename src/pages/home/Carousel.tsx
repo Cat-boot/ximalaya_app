@@ -10,11 +10,15 @@ import {ICarouselData} from '@/models/home';
 import {connect, ConnectedProps} from 'react-redux';
 import {RootState} from '@/models/index';
 import Touchable from '@/components/Touchable';
-const MapStateToProps = (state: RootState) => ({
-  ACarouselData: state.home.ACarouselData,
-  ActiveCarouselIndex: state.home.ActiveCarouselIndex,
-  loading: state.loading.effects['home/effectsCarousel'],
-});
+const MapStateToProps = (state: RootState, props: {namespace: string}) => {
+  const namespace = props.namespace,
+    modelState = state[namespace];
+  return {
+    ACarouselData: modelState.ACarouselData,
+    ActiveCarouselIndex: modelState.ActiveCarouselIndex,
+    loading: state.loading.effects[namespace + '/effectsCarousel'],
+  };
+};
 const connector = connect(MapStateToProps);
 type ModelState = ConnectedProps<typeof connector>;
 
@@ -24,6 +28,7 @@ export const slidHeight = hp(26);
 const itemWidth = slideWidth + wp(2) * 2;
 interface IProps extends ModelState {
   _onPress: (data: string) => void;
+  namespace: string;
 }
 
 class Carousel extends React.PureComponent<IProps> {
@@ -38,17 +43,23 @@ class Carousel extends React.PureComponent<IProps> {
   };
   //获取轮播图欢数据
   getACarouselData = () => {
-    const {dispatch} = this.props;
+    const {dispatch, namespace} = this.props;
     dispatch({
-      type: 'home/effectsCarousel',
+      type: namespace + '/effectsCarousel',
+      payload: {
+        namespace,
+      },
     });
   };
   //获取当前图片下标
   _onSnapToItem = (index: number) => {
-    const {dispatch} = this.props;
+    const {dispatch, namespace} = this.props;
     dispatch({
-      type: 'home/setState',
-      payload: {ActiveCarouselIndex: index},
+      type: namespace + '/setState',
+      payload: {
+        ActiveCarouselIndex: index,
+        namespace,
+      },
     });
   };
   //遍历图片
@@ -91,7 +102,6 @@ class Carousel extends React.PureComponent<IProps> {
       </View>
     );
   }
-
   componentWillUnmount() {
     this.setState((state, callback) => {
       return;

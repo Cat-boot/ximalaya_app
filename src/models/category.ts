@@ -30,8 +30,8 @@ interface CategoryModel extends Model {
 const initialState: CategoryModelState = {
   isEdit: false,
   myCategory: [
-    {id: '推荐', name: '推荐'},
-    {id: 'vip', name: 'vip'},
+    {id: '0', name: '推荐'},
+    {id: '1', name: 'vip'},
   ],
   category: [],
 };
