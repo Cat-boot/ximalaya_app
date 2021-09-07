@@ -27,7 +27,6 @@ const slideWidth = wp(90);
 export const slidHeight = hp(26);
 const itemWidth = slideWidth + wp(2) * 2;
 interface IProps extends ModelState {
-  _onPress: (data: string) => void;
   namespace: string;
 }
 
@@ -35,11 +34,8 @@ class Carousel extends React.PureComponent<IProps> {
   componentDidMount() {
     this.getACarouselData();
   }
-  _onPress = (data: string) => {
-    const {_onPress} = this.props;
-    if (typeof _onPress === 'function') {
-      _onPress(data);
-    }
+  _onPress = (data: ICarouselData) => {
+    console.log(data);
   };
   //获取轮播图欢数据
   getACarouselData = () => {
@@ -71,7 +67,7 @@ class Carousel extends React.PureComponent<IProps> {
       <Touchable
         activeOpacity={1}
         onPress={() => {
-          this._onPress(item.id);
+          this._onPress(item);
         }}>
         <ParallaxImage
           {...parallaxProps}

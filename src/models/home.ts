@@ -16,7 +16,7 @@ export interface ICarouselData {
 }
 //声明猜你喜欢数据类型
 export interface IGuess {
-  id: number;
+  id: string;
   img: string;
   title: string;
 }

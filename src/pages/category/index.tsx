@@ -9,7 +9,6 @@ import Item, {
   viewItem,
   ViewItemHeight,
   viewScreen,
-  margin,
 } from '@/pages/category/item';
 import HeaderRightBtn from '@/pages/category/headerRightBtn';
 import {RootStackNavigation} from '@/navigator/index';

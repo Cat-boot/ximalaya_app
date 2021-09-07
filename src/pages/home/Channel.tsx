@@ -5,14 +5,14 @@ import IconFont from '@/assets/icon';
 import Touchable from '@/components/Touchable';
 interface IProps {
   data: IChannel;
-  _onPress: (data: string) => void;
+  _onPress: (data: IChannel) => void;
 }
 //PureComponent判断父组件传递过来的props和上一次传递过来的是否一样，一样的话就不渲染render，否则渲染
 class Channel extends React.PureComponent<IProps> {
   _onPress = () => {
     const {_onPress, data} = this.props;
     if (typeof _onPress === 'function') {
-      _onPress(data.id);
+      _onPress(data);
     }
   };
   componentWillUnmount() {

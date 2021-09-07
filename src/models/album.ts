@@ -32,12 +32,12 @@ export interface IAlbumModel extends Model {
   reducers: {
     setState: Reducer<IAlbumModelState>;
   };
-  effect: {
+  effects: {
     fetchAlbum: Effect;
   };
 }
 //声明默认值
-const initialAlbum: IAlbumModelState = {
+const initialState: IAlbumModelState = {
   id: '',
   title: '',
   summary: '',
@@ -52,16 +52,16 @@ const initialAlbum: IAlbumModelState = {
 //声明model
 const albumModel: IAlbumModel = {
   namespace: 'album',
-  state: initialAlbum,
+  state: initialState,
   reducers: {
-    setState(state = initialAlbum, {payload}) {
+    setState(state = initialState, {payload}) {
       return {
         ...state,
         ...payload,
       };
     },
   },
-  effect: {
+  effects: {
     *fetchAlbum({payload}, {call, put}) {
       const {data} = yield call(axios.get, ALBUM_URL);
       yield put({

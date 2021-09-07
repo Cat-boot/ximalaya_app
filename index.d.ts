@@ -4,3 +4,6 @@ declare module 'dva-model-extend' {
   //声明一个函数，这个函数的类型为Model,传入的每一个参数都为一个类型为Model的对象，
   export default function modelExtend(...Model: Model[]): Model;
 }
+//声明png图片为model
+declare module '*.png';
+declare module '*.gif';

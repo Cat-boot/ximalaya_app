@@ -14,7 +14,7 @@ import {RootState} from '@/models/index';
 import Carousel, {slidHeight} from '@/pages/home/Carousel';
 import Guess from '@/pages/home/Guess';
 import Channel from '@/pages/home/Channel';
-import {IChannel} from '@/models/home';
+import {ICarouselData, IChannel, IGuess} from '@/models/home';
 import {HomeParamList} from '@/navigator/homeTopTabs';
 import {RouteProp} from '@react-navigation/native';
 
@@ -50,9 +50,10 @@ class Index extends React.PureComponent<IProp, IState> {
   componentDidMount() {
     this.getAChannelData();
   }
-  //点击跳转详情页1
-  _onPress = (data: string | number) => {
-    console.log(data);
+  //点击跳转详情页
+  _onPress = (data: IGuess | IChannel) => {
+    const {navigation} = this.props;
+    navigation.navigate('Album', {data});
   };
 
   //获取列表数据
@@ -107,7 +108,7 @@ class Index extends React.PureComponent<IProp, IState> {
     const {namespace} = this.props;
     return (
       <View>
-        <Carousel _onPress={this._onPress} namespace={namespace} />
+        <Carousel namespace={namespace} />
         <Guess _onPress={this._onPress} namespace={namespace} />
       </View>
     );

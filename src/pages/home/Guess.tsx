@@ -17,7 +17,7 @@ const MapStateToProps = (state: RootState, props: {namespace: string}) => {
 const connector = connect(MapStateToProps);
 type ModelState = ConnectedProps<typeof connector>;
 interface IProps extends ModelState {
-  _onPress: (data: number) => void;
+  _onPress: (data: IGuess) => void;
   namespace: string;
 }
 class Guess extends React.PureComponent<IProps> {
@@ -35,7 +35,7 @@ class Guess extends React.PureComponent<IProps> {
     });
   };
   //点击跳转
-  _onPress = (data: number) => {
+  _onPress = (data: IGuess) => {
     const {_onPress} = this.props;
     if (typeof _onPress === 'function') {
       _onPress(data);
@@ -46,7 +46,7 @@ class Guess extends React.PureComponent<IProps> {
     return (
       <Touchable
         activeOpacity={1}
-        onPress={() => this._onPress(item.id)}
+        onPress={() => this._onPress(item)}
         style={styles.items}>
         <Image source={{uri: item.img}} style={styles.images} />
         <Text numberOfLines={2}>
@@ -57,7 +57,7 @@ class Guess extends React.PureComponent<IProps> {
       </Touchable>
     );
   };
-  _topHearderComponent = () => {
+  _topHearderComponent = (data: IGuess) => {
     return (
       <View style={styles.guessTitleBOx}>
         <View style={styles.guessTitleItem}>
@@ -69,7 +69,7 @@ class Guess extends React.PureComponent<IProps> {
           <Text>猜你喜欢</Text>
         </View>
         <View style={styles.guessTitleItem}>
-          <Touchable onPress={() => this._onPress(111)}>
+          <Touchable>
             <Text style={styles.guessTitleItemText}>更多</Text>
           </Touchable>
           <IconFont name={'icon-xmlygengduo'} size={18} />
